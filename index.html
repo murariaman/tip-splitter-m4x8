@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tip Splitter</title>
+  <style>
+    :root {
+      --bg: #fdf6ec;
+      --card: #ffffff;
+      --text: #2b2118;
+      --muted: #7a6a5a;
+      --accent: #e07a1f;
+      --line: #eadfce;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(80, 50, 10, 0.08);
+    }
+    h1 { margin: 0 0 4px; font-size: 1.5rem; }
+    .sub { margin: 0 0 20px; color: var(--muted); font-size: 0.95rem; }
+    label { display: block; margin: 14px 0 6px; font-size: 0.85rem; color: var(--muted); }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    .tips { display: flex; gap: 8px; margin-top: 6px; }
+    .tips button {
+      flex: 1;
+      padding: 10px 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .tips button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .result {
+      margin-top: 22px;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 12px;
+      display: grid;
+      gap: 8px;
+    }
+    .row { display: flex; justify-content: space-between; }
+    .row strong { font-size: 1.15rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Tip Splitter</h1>
+    <p class="sub">A small sample page for a GitHub Pages test.</p>
+
+    <label for="bill">Bill amount ($)</label>
+    <input id="bill" type="number" min="0" step="0.01" value="84.50">
+
+    <label>Tip</label>
+    <div class="tips" id="tips">
+      <button type="button" data-tip="10">10%</button>
+      <button type="button" data-tip="15">15%</button>
+      <button type="button" data-tip="18" class="active">18%</button>
+      <button type="button" data-tip="20">20%</button>
+    </div>
+
+    <label for="people">Number of people</label>
+    <input id="people" type="number" min="1" step="1" value="3">
+
+    <div class="result">
+      <div class="row"><span>Tip total</span><span id="tipTotal">$0.00</span></div>
+      <div class="row"><span>Grand total</span><span id="grand">$0.00</span></div>
+      <div class="row"><span>Each person pays</span><strong id="each">$0.00</strong></div>
+    </div>
+  </main>
+
+  <script>
+    var tipPct = 18;
+    var bill = document.getElementById("bill");
+    var people = document.getElementById("people");
+
+    function money(n) { return "$" + n.toFixed(2); }
+
+    function update() {
+      var b = parseFloat(bill.value) || 0;
+      var p = Math.max(1, parseInt(people.value, 10) || 1);
+      var tip = b * tipPct / 100;
+      var total = b + tip;
+      document.getElementById("tipTotal").textContent = money(tip);
+      document.getElementById("grand").textContent = money(total);
+      document.getElementById("each").textContent = money(total / p);
+    }
+
+    document.getElementById("tips").addEventListener("click", function (e) {
+      var btn = e.target.closest("button");
+      if (!btn) return;
+      tipPct = parseFloat(btn.getAttribute("data-tip"));
+      var all = this.querySelectorAll("button");
+      for (var i = 0; i < all.length; i++) all[i].classList.remove("active");
+      btn.classList.add("active");
+      update();
+    });
+
+    bill.addEventListener("input", update);
+    people.addEventListener("input", update);
+    update();
+  </script>
+</body>
+</html>
